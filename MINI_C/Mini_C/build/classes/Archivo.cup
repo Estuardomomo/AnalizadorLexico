@@ -1,0 +1,101 @@
+/* Simple +/-/* expression language; parser evaluates constant expressions on the fly*/
+import java_cup.runtime.*;
+
+parser code {:
+    // Connect this parser to a scanner!
+    scanner s;
+    Parser(scanner s){ this.s=s; }
+    //Aqui puedo agregar código a mi clase.
+:}
+
+/* define how to connect to the scanner! */
+init with {: s.init(); :};
+scan with {: return s.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+
+terminal          minus,arop, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets_2,t_void,prnthss_1,prnthss_3,comma,clase,t_implements,t_interface,
+                  t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,brackets_1,brackets_3,neg,malloc,readInteger,
+                  ReadLine,dot,dblConst,intCnst,t_null,t_newArr,getByte,setByte, equals, curly_1, curly_3, extend, t_new;
+/* Non terminals */
+non terminal Object     VariableList, Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
+                        ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,Expr,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
+                        VariableDeclStar,StmtStar,LValue,Constant,Call,Actuals,LibCall,
+                         PrototypeStar, ExprOptional, elseStmtOptional, IdentList, ExprList;
+/* Precedences */
+precedence left =;         //assignment
+precedence left ||;         //logical or
+precedence left &&;          //logical and
+precedence left ==, !=;       //equality
+precedence left <, <=, >, >=;   //relational
+precedence left +,-;         //addition, subtraction
+precedence left *, /, %;       //multiply, divide, mod
+precedence left !, -;       //unary minus, logical not
+precedence left [, .;       //array indexing and field selection
+
+/* The grammar rules */
+start with Program;
+
+Program       ::=    Decl+
+
+Decl          ::=    VariableDecl | FunctionDecl | ClassDecl | InterfaceDecl
+
+VariableDecl  ::=    Variable ;
+
+Variable      ::=    Type ident
+
+Type          ::=    int | double | bool | string | ident | Type [ ]
+
+FunctionDecl ::=    Type ident ( Formals ) StmtBlock |
+
+void ident ( Formals ) StmtBlock
+
+Formals       ::=    Variable+, | ε
+
+ClassDecl     ::=    class ident < extends ident> <implements ident+,> { Field* }
+
+Field         ::=    VariableDecl | FunctionDecl
+
+InterfaceDecl::=     interface ident { Prototype* }
+
+Prototype     ::=    Type ident ( Formals ) ; | void ident ( Formals ) ;
+
+StmtBlock     ::=    { VariableDecl* Stmt* }
+
+Stmt          ::=    <Expr>; | IfStmt | WhileStmt | ForStmt | BreakStmt |
+
+ReturnStmt | PrintStmt | StmtBlock
+
+IfStmt        ::=    if ( Expr ) Stmt <else Stmt>
+
+WhileStmt     ::=    while ( Expr ) Stmt
+
+ForStmt       ::=    for ( <Expr>; <Expr> ; <Expr> ) Stmt
+
+ReturnStmt    ::=    return <Expr> ;
+
+BreakStmt     ::=    break ;
+
+PrintStmt     ::=    Print ( Expr+, ) ;
+
+Expr          ::=    LValue = Expr | Constant | LValue | this | Call | ( Expr ) |
+
+Expr + Expr | Expr - Expr | Expr * Expr | Expr / Expr |
+
+Expr % Expr | - Expr | Expr < Expr | Expr <= Expr |
+
+Expr > Expr | Expr >= Expr | Expr == Expr | Expr != Expr |
+
+Expr && Expr | Expr || Expr | !Expr | ReadInteger ( ) |
+
+ReadLine ( ) | New ( ident ) | NewArray ( Expr , Type )
+
+LValue        ::=    ident | Expr . ident | Expr [ Expr ]
+
+Call          ::=    ident ( Actuals ) | Expr . ident ( Actuals )
+
+Actuals       ::=    Expr+, | ε
+
+Constant      ::=    intConstant | doubleConstant | boolConstant |
+
+stringConstant | null
