@@ -1,0 +1,248 @@
+package Compilador;
+import java_cup.runtime.*;
+import java.util.*;
+
+parser code {:
+    
+    public String listOfErrors ="";
+    public String bitacora = "";
+    public void syntax_error(Symbol s){
+		report_error("Error de sintaxis. Línea: " + (s.right + 1) +
+		" Columna: " + (s.left +1) + ". Texto: \"" + s.value + "\"", null);
+            listOfErrors+="Línea: " + (s.right + 1) +
+		" Columna: " + s.left + " Error de sintaxis. Texto: \"" + s.value + "\""+"\r\n";
+	}
+        public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception 
+        {
+         //report_fatal_error("Fatal Error: " + s.value, null);
+        }
+:};
+
+action code {:
+      tableOfSymbols table = new tableOfSymbols();
+      public String ambit = "";
+      Stack<String> ambits =  new Stack<String>();
+      boolean isParameter = false;
+      String typeStmt = "noName";
+:};
+
+terminal            semicolon, intConstantType, doubleConstantType, boolConstantType, stringConstantType, lBracket, rBracket, lParenthesis, rParenthesis, VOID,
+                    comma, CLASS, EXTENDS, lBrace, rBrace, IMPLEMENTS, INTERFACE, IF, ELSE, FOR, WHILE, RETURN,
+                    BREAK, PRINT, EQUAL, THIS, PLUS, MINUS, TIMES, DIV, MOD, LESST, LESSTE, MORET, MORETE, EQUALTO,
+                    NOEQUAL, AND, OR, NOT, NEW_KW, NEWARRAY_KW, READINT_KW, READLINE_KW, MALLOC_KW, point, GETBYTE_M,
+                    SETBYTE_M, NULL, BRACKETS;
+
+terminal String     ident, stringConstants;
+terminal int        integerConstants;
+terminal double     doubleConstants;
+terminal boolean    booleanConstants;
+
+non terminal Object Program, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, ClassDecl, Field, 
+                    InterfaceDecl, Prototype, StmtBlock, Stmt, IfStmt, WhileStmt, ForStmt, ReturnStmt, 
+                    BreakStmt, PrintStmt, Expr, LValue, Call, LibCall, Actuals, Constant;
+
+//no terminals maded by me
+
+non terminal        DeclLR, FormalsLR, ClassOptional, ClassOptional2, ClassOptional3, ClassClosing,
+                    InterfaceClosing, VariableDeclClosing, StmtClosing, ExprOptional, ExprLR, IfStmtElse;
+
+precedence left EQUAL;
+precedence left OR, AND;
+precedence nonassoc LESST, LESSTE, MORET, MORETE, EQUALTO, NOEQUAL;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV, MOD;
+precedence nonassoc NOT;
+precedence nonassoc lBracket, point;
+precedence nonassoc ELSE;
+
+
+
+Program             ::= Decl DeclLR;
+DeclLR              ::= Decl DeclLR 
+                    |;
+Decl                ::= VariableDecl
+                    | FunctionDecl
+                    | ClassDecl 
+                    | InterfaceDecl
+                    | error semicolon
+                    | error rBrace;
+
+VariableDecl        ::= Variable semicolon;
+Variable            ::= Type:t ident:i {:
+                        String val = null;
+                        if(t.equals("int")||t.equals("double"))
+                           val = "0";
+                        if(ambit.equals(""))
+                        {
+                              if(isParameter)
+                                    table.addSymbolS(String.valueOf(t)+","+i+","+"global", new ObjectS(i,String.valueOf(t),val,"Parametro","global")); 
+                              else
+                                    table.addSymbolS(String.valueOf(t)+","+i+","+"global", new ObjectS(i,String.valueOf(t),val,"Variable","global"));       
+                        }
+                              
+                        else
+                        {
+                              if(isParameter)
+                                    table.addSymbolS(String.valueOf(t)+","+i+","+ambit, new ObjectS(i,String.valueOf(t),val,"Parametro",ambit));
+                              else
+                                    table.addSymbolS(String.valueOf(t)+","+i+","+ambit, new ObjectS(i,String.valueOf(t),val,"Variable",ambit));
+                        }
+                              
+
+
+                        :};
+Type                ::= intConstantType:t {:RESULT = t;:}
+                    | doubleConstantType:t {:RESULT = t;:}
+                    | boolConstantType:t {:RESULT = t;:}
+                    | stringConstantType:t {:RESULT = t;:}
+                    | ident:t {:RESULT = t;:}
+                    | Type BRACKETS;
+FunctionDecl        ::= Type:t ident:i {:
+                         table.addSymbolS(String.valueOf(t)+","+i+","+ambit, new ObjectS(i,String.valueOf(t),"","Funcion",ambit));
+                         ambit = i;
+                         ambits.push(ambit);
+                        :}lParenthesis {:isParameter = true;:} Formals rParenthesis {:isParameter = false;:} StmtBlock
+                    | VOID:t ident:i {:
+                        table.addSymbolS(String.valueOf(t)+","+i+","+ambit, new ObjectS(i,String.valueOf(t),"","VOID",ambit));
+                        ambit = i;
+                        ambits.push(ambit);
+                        :} lParenthesis {:isParameter = true;:}  Formals {:isParameter = false;:} rParenthesis StmtBlock;
+Formals             ::= Variable FormalsLR |;
+FormalsLR           ::= comma Variable FormalsLR
+                    |;
+ClassDecl           ::= CLASS:t ident:i {:
+                         table.addSymbolS(String.valueOf(t)+","+i+","+ambit, new ObjectS(i,String.valueOf(t),"","Clase",ambit));
+                         ambit = i;
+                         ambits.push(ambit);
+                        :} ClassOptional ClassOptional2 lBrace ClassClosing rBrace {:
+                                                                                    ambits.pop();/*ambits.push("fin"+ambit);*/
+                                                                                    if(!ambits.empty())
+                                                                                    {
+                                                                                          ambit = ambits.peek();
+                                                                                    }
+                                                                                    else{
+                                                                                          ambit = "";
+                                                                                    }
+                                                                                      :};
+ClassOptional       ::= EXTENDS ident
+                    |;
+ClassOptional2      ::= IMPLEMENTS ident ClassOptional3
+                    |;
+ClassOptional3      ::= comma ident ClassOptional3
+                    |;
+ClassClosing        ::= Field ClassClosing
+                    |;
+Field               ::= VariableDecl
+                    | FunctionDecl;
+InterfaceDecl       ::= INTERFACE:t ident:i {:
+                        table.addSymbolS(String.valueOf(t)+","+i+","+ambit, new ObjectS(i,String.valueOf(t),"","Inteface",ambit));
+                        ambit = i;
+                        ambits.push(ambit);
+                        :} lBrace InterfaceClosing rBrace {:
+                                                            ambits.pop();/*ambits.push("fin"+ambit);*/
+                                                            if(!ambits.empty())
+                                                               {
+                                                                  
+                                                                  ambit = ambits.peek();
+                                                                }
+                                                                else{
+                                                                     ambit = "";
+                                                                     }
+                                                                     :};
+InterfaceClosing    ::= Prototype InterfaceClosing
+                    |;
+Prototype           ::= Type ident lParenthesis Formals rParenthesis semicolon
+                    | VOID  ident   lParenthesis Formals rParenthesis semicolon;
+StmtBlock           ::= lBrace VariableDeclClosing StmtClosing rBrace {:
+                                                                        ambits.pop();/*ambits.push("fin"+ambit);*/
+                                                                        if(!ambits.empty())
+                                                                           {
+                                                                             
+                                                                             ambit = ambits.peek();
+                                                                            }
+                                                                        else{
+                                                                             ambit = "";
+                                                                                    }
+                                                                                    :};
+VariableDeclClosing ::= VariableDeclClosing VariableDecl 
+                    |;
+StmtClosing         ::= Stmt StmtClosing
+                    |;
+Stmt                ::= ExprOptional semicolon
+                    | IfStmt {:ambit = "if"; ambits.push(ambit);:}
+                    | WhileStmt {:ambit = "while"; ambits.push(ambit);:}
+                    | ForStmt {:ambit = "for"; ambits.push(ambit);:}
+                    | BreakStmt 
+                    | ReturnStmt 
+                    | PrintStmt
+                    | StmtBlock;
+ExprOptional        ::= Expr
+                    |;
+IfStmt              ::= IF lParenthesis Expr rParenthesis Stmt IfStmtElse;
+IfStmtElse          ::=  ELSE Stmt
+                    |;
+WhileStmt           ::= WHILE lParenthesis Expr rParenthesis Stmt;
+ForStmt             ::= FOR lParenthesis ExprOptional semicolon Expr semicolon ExprOptional rParenthesis Stmt;
+ReturnStmt          ::= RETURN ExprOptional semicolon;
+BreakStmt           ::= BREAK semicolon;
+PrintStmt           ::= PRINT lParenthesis Expr ExprLR rParenthesis semicolon;
+ExprLR              ::= comma Expr ExprLR
+                    |;
+Expr                ::= LValue EQUAL Expr:e1 {:RESULT = e1;
+                                                /*System.out.println(e1);*/:}
+                    | Constant:c {:RESULT = c;:}
+                    | LValue
+                    | THIS
+                    | Call
+                    | lParenthesis Expr rParenthesis
+                    | Expr:e1 PLUS Expr:e2 {: if(e1 != null && e2 != null){
+                                                       RESULT = (Object) (Double.parseDouble(String.valueOf(e1)) + Double.parseDouble((String.valueOf(e2))));
+                                                        System.out.println(String.valueOf(RESULT)); 
+                                                }                              
+                                              :}
+                    | Expr:e1 MINUS Expr:e2 {: if(e1 != null && e2 != null){
+                                                       RESULT = (Object) (Double.parseDouble(String.valueOf(e1)) - Double.parseDouble((String.valueOf(e2))));
+                                                        System.out.println(String.valueOf(RESULT)); 
+                                                }                              
+                                              :} 
+                    | Expr TIMES Expr
+                    | Expr DIV Expr
+                    | Expr MOD Expr
+                    | MINUS Expr
+                    | Expr LESST Expr
+                    | Expr LESSTE Expr
+                    | Expr MORET Expr
+                    | Expr MORETE Expr
+                    | Expr EQUALTO Expr
+                    | Expr NOEQUAL Expr
+                    | Expr AND Expr
+                    | Expr OR Expr
+                    | NOT Expr
+                    | NEW_KW lParenthesis ident rParenthesis
+                    | NEWARRAY_KW lParenthesis Expr comma Type rParenthesis
+                    | READINT_KW lParenthesis rParenthesis
+                    | READLINE_KW lParenthesis rParenthesis
+                    | MALLOC_KW lParenthesis Expr rParenthesis;
+LValue              ::= ident:i {:RESULT = i;:}
+                    | Expr point ident 
+                    | Expr lBracket Expr rBracket;
+
+Call                ::= ident lParenthesis Actuals rParenthesis
+                    | Expr point ident lParenthesis Actuals rParenthesis
+                    | Expr point LibCall lParenthesis Actuals rParenthesis;
+LibCall             ::= GETBYTE_M lParenthesis Expr rParenthesis
+                    | SETBYTE_M lParenthesis Expr comma Expr rParenthesis;
+Actuals             ::= Expr ExprLR
+                    |;
+Constant            ::= integerConstants:i {:RESULT = i;:}
+                    | doubleConstants:i {:RESULT = i;:}
+                    | booleanConstants:i {:RESULT = i;:}
+                    | stringConstants:i {:RESULT = i;:}
+                    | NULL:i {:RESULT = i;:};
+                
+
+
+
+
+
+
