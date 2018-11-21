@@ -94,6 +94,13 @@ rreturn = return
 bbreak = break
 NNew = New
 NNewArray = NewArray
+//Nuevas palabras reservadas
+PPrint = Print
+RReadInteger = ReadInteger
+RReadLine = ReadLine
+MMalloc = Malloc
+GByte = get byte
+SByte = set byte
 //Identificador
 Identificador = [a-zA-Z_][a-zA-Z0-9_\x7f-\xff]{0,30}
 //Espacios en blanco
@@ -112,8 +119,10 @@ EXPONENT_DNUM = [+-]?({DNUM} [eE][+-]? {LNUM})
 double = {DNUM}|{EXPONENT_DNUM}
 string = ('([^'\\]|\\.)*')|(\"([^\"\\]|\\.)*\")|"/*"~"*/"
 //Operadores y caracteres de puntuación
-operadoreslogicos = "&&"|"||"|"!"
-operadoresAritmeticos = "+"|"-"|"/"|"*"|"%"
+operadoreslogicos = "&&"|"||"
+negacion = "!"
+operadoresAritmeticos = "+"|"/"|"*"|"%"
+resta = "-"
 operadoresComparativo = "=="|"!="|"<"|">"|"<="|">="
 operadoresAsignacion = "=" 
 Punto = "."
@@ -127,9 +136,143 @@ CorchetesA = "["
 CorchetesC = "]"
 //Agrupaciones - Entidades que devolverán un texto
 Comentario = {ComentarioSimple}|{ComentarioMultiple}
-Constante = {integer}|{double}|{boolean}
 ErrorEspecial = "/*"("*"[^/]|[^*/]|[^*]"/")*
 %%
+{negacion} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" OperadoresLogicos \r\n");
+        return new Symbol(sym.tnegacion, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{resta} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" OperadoresAritmeticos \r\n");
+        return new Symbol(sym.tresta, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{vvoid} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tvvoid, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{iint} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tiint, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{ddouble} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tddouble, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{bbool} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tbbool, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{sstring} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tsstring, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{cclass} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tcclass, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{iinterface} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tiinterface, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{nnull} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tnnull, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{tthis} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.ttthis, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{eextends} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.teextends, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{iimplements} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tiimplements, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{ffor} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tffor, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{wwhile} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.twwhile, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{iif} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tiif, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{eelse} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.teelse, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{rreturn} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.trreturn, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{bbreak} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tbbreak, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{NNew} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tNNew, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{NNewArray} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tNNewArray, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{PPrint} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tPPrint, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{RReadInteger} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tRReadInteger, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{RReadLine} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tRReadLine, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{MMalloc} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tMMalloc, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{GByte} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tGByte, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{SByte} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tSByte, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
 {string} {
     try{
         raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" Tipo String \r\n");
@@ -205,10 +348,20 @@ ErrorEspecial = "/*"("*"[^/]|[^*/]|[^*]"/")*
         raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" Corchetes \r\n");
         return new Symbol(sym.tCorchetesC, yycolumn, yyline, yytext());
         } catch(IOException ex){}}
-{Constante} {
+{integer} {
     try{
-        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+"Constante \r\n");
-        return new Symbol(sym.tConstante, yycolumn, yyline, yytext());
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+"Entero \r\n");
+        return new Symbol(sym.tinteger, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{double} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+"Double \r\n");
+        return new Symbol(sym.tdouble, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{boolean} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+"Boolean \r\n");
+        return new Symbol(sym.tboolean, yycolumn, yyline, yytext());
         } catch(IOException ex){}}
 {Identificador} { 
     try{

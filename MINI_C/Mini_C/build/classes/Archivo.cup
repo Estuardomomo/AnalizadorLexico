@@ -13,15 +13,9 @@ init with {: s.init(); :};
 scan with {: return s.next_token(); :};
 
 /* Terminals (tokens returned by the scanner). */
-
-terminal          minus,arop, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets_2,t_void,prnthss_1,prnthss_3,comma,clase,t_implements,t_interface,
-                  t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,brackets_1,brackets_3,neg,malloc,readInteger,
-                  ReadLine,dot,dblConst,intCnst,t_null,t_newArr,getByte,setByte, equals, curly_1, curly_3, extend, t_new;
+terminal      tIdentificador, tdouble, tstring, tvvoid, tcclass, tiinterface, tnnull, ttthis, teextends, tiimplements, tffor, twwhile, tiif, teelse, trreturn, tbbreak, tNew, tNNewArray, tPPrint, tRReadInteger, tRReadLine, tMMalloc, tGbyte, tSbyte, tComa, tParentesisA, tParentesisC, tLlavesA, tLlavesC, tPuntoyComa, toperadoresAsignacion, plus, tresta, times, div, percentage, smaller, smallerEquals, greater, greaterEquals, equals, notequals, toperadoreslogicos, tnegacion, tPunto, tCorcheteA, tCorcheteC, tiint, tddouble, tbbool, tsstring, tinteger, tboolean;
 /* Non terminals */
-non terminal Object     VariableList, Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
-                        ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,Expr,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
-                        VariableDeclStar,StmtStar,LValue,Constant,Call,Actuals,LibCall,
-                         PrototypeStar, ExprOptional, elseStmtOptional, IdentList, ExprList;
+non terminal Object  Program, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, ClassDecl, Field, InterfaceDecl, Prototype, StmtBlock, Stmt, IfStmt, WhileStmt, ForStmt, ReturnStmt, BreakStmt, PrintStmt, Expr, LValue, Call, LibCall, Actuals, Constant;
 /* Precedences */
 precedence left =;         //assignment
 precedence left ||;         //logical or
@@ -36,66 +30,15 @@ precedence left [, .;       //array indexing and field selection
 /* The grammar rules */
 start with Program;
 
-Program       ::=    Decl+
+Program::= Decl Program | Decl;
 
-Decl          ::=    VariableDecl | FunctionDecl | ClassDecl | InterfaceDecl
+Decl::=  VariableDecl | FunctionDecl | ClassDecl | InterfaceDecl;
 
-VariableDecl  ::=    Variable ;
+VariableDecl ::= Variable tPuntoyComa ;
 
-Variable      ::=    Type ident
+Variable ::= Type tIdentificador ;
 
-Type          ::=    int | double | bool | string | ident | Type [ ]
+Type ::= tiint | tddouble | tbbool | tsstring | tIdentificador | Type tCorcheteA tCorcheteC ;
 
-FunctionDecl ::=    Type ident ( Formals ) StmtBlock |
-
-void ident ( Formals ) StmtBlock
-
-Formals       ::=    Variable+, | ε
-
-ClassDecl     ::=    class ident < extends ident> <implements ident+,> { Field* }
-
-Field         ::=    VariableDecl | FunctionDecl
-
-InterfaceDecl::=     interface ident { Prototype* }
-
-Prototype     ::=    Type ident ( Formals ) ; | void ident ( Formals ) ;
-
-StmtBlock     ::=    { VariableDecl* Stmt* }
-
-Stmt          ::=    <Expr>; | IfStmt | WhileStmt | ForStmt | BreakStmt |
-
-ReturnStmt | PrintStmt | StmtBlock
-
-IfStmt        ::=    if ( Expr ) Stmt <else Stmt>
-
-WhileStmt     ::=    while ( Expr ) Stmt
-
-ForStmt       ::=    for ( <Expr>; <Expr> ; <Expr> ) Stmt
-
-ReturnStmt    ::=    return <Expr> ;
-
-BreakStmt     ::=    break ;
-
-PrintStmt     ::=    Print ( Expr+, ) ;
-
-Expr          ::=    LValue = Expr | Constant | LValue | this | Call | ( Expr ) |
-
-Expr + Expr | Expr - Expr | Expr * Expr | Expr / Expr |
-
-Expr % Expr | - Expr | Expr < Expr | Expr <= Expr |
-
-Expr > Expr | Expr >= Expr | Expr == Expr | Expr != Expr |
-
-Expr && Expr | Expr || Expr | !Expr | ReadInteger ( ) |
-
-ReadLine ( ) | New ( ident ) | NewArray ( Expr , Type )
-
-LValue        ::=    ident | Expr . ident | Expr [ Expr ]
-
-Call          ::=    ident ( Actuals ) | Expr . ident ( Actuals )
-
-Actuals       ::=    Expr+, | ε
-
-Constant      ::=    intConstant | doubleConstant | boolConstant |
-
-stringConstant | null
+FunctionDecl ::= Type FunctionRightRecursive
+| tvvoid FunctionRightRecursive ;

@@ -99,7 +99,8 @@ PPrint = Print
 RReadInteger = ReadInteger
 RReadLine = ReadLine
 MMalloc = Malloc
-
+GByte = get byte
+SByte = set byte
 //Identificador
 Identificador = [a-zA-Z_][a-zA-Z0-9_\x7f-\xff]{0,30}
 //Espacios en blanco
@@ -118,8 +119,10 @@ EXPONENT_DNUM = [+-]?({DNUM} [eE][+-]? {LNUM})
 double = {DNUM}|{EXPONENT_DNUM}
 string = ('([^'\\]|\\.)*')|(\"([^\"\\]|\\.)*\")|"/*"~"*/"
 //Operadores y caracteres de puntuación
-operadoreslogicos = "&&"|"||"|"!"
-operadoresAritmeticos = "+"|"-"|"/"|"*"|"%"
+operadoreslogicos = "&&"|"||"
+negacion = "!"
+operadoresAritmeticos = "+"|"/"|"*"|"%"
+resta = "-"
 operadoresComparativo = "=="|"!="|"<"|">"|"<="|">="
 operadoresAsignacion = "=" 
 Punto = "."
@@ -135,6 +138,16 @@ CorchetesC = "]"
 Comentario = {ComentarioSimple}|{ComentarioMultiple}
 ErrorEspecial = "/*"("*"[^/]|[^*/]|[^*]"/")*
 %%
+{negacion} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" OperadoresLogicos \r\n");
+        return new Symbol(sym.tnegacion, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{resta} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" OperadoresAritmeticos \r\n");
+        return new Symbol(sym.tresta, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
 {vvoid} {
     try{
         raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
@@ -249,6 +262,16 @@ ErrorEspecial = "/*"("*"[^/]|[^*/]|[^*]"/")*
     try{
         raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
         return new Symbol(sym.tMMalloc, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{GByte} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tGByte, yycolumn, yyline, yytext());
+        } catch(IOException ex){}}
+{SByte} {
+    try{
+        raf.writeBytes("Simbolo: " + yytext() + " Fila: " + Integer.toString(yyline) + " Columna: "+ Integer.toString(yycolumn)+" PalabraReservada \r\n");
+        return new Symbol(sym.tSByte, yycolumn, yyline, yytext());
         } catch(IOException ex){}}
 {string} {
     try{
