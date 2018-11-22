@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -27,7 +28,7 @@ import javax.swing.JOptionPane;
 public class JForm1 extends javax.swing.JFrame {
     
     //Atributos, Objetos y Variables
-    File ArchivoActual;
+    public File ArchivoActual;
     ClaseJflex objFlex;
     ClaseCup objCup;
 
@@ -41,7 +42,7 @@ public class JForm1 extends javax.swing.JFrame {
         //Crear clases de JFLEX
         jflex.Main.generate(new File(rutaJflex));
         //Crear clases del .CUP
-        String[] cupCommands = {"-destdir", "C:\\Users\\User_Len\\Documents\\GitHub\\AnalizadorLexico\\MINI_C\\Mini_C\\src\\Compilador" ,"-parser", "ClaseCup", rutaCUP};
+        String[] cupCommands = {"-destdir", "C:\\Users\\User_Len\\Documents\\GitHub\\AnalizadorLexico\\MINI_C\\Mini_C\\src\\Compilador\\" ,"-parser", "ClaseCup", rutaCUP};
         java_cup.Main.main(cupCommands);
     }   
     /**
@@ -58,12 +59,13 @@ public class JForm1 extends javax.swing.JFrame {
         jbtnArchivo = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTable = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jlbConsola = new javax.swing.JLabel();
         jlbTabla = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,19 +91,21 @@ public class JForm1 extends javax.swing.JFrame {
         });
 
         jButton1.setText("Análisis Semántico");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Nombre", "Tipo", "Valor", "Contexto"
+                "Nombre", "Tipo", "Valor", "Contexto", "Instruccion", "Parametros"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jTable);
 
         jTextArea1.setColumns(20);
         jTextArea1.setRows(5);
@@ -117,6 +121,8 @@ public class JForm1 extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
         jLabel1.setText("MINI_C#");
 
+        jButton3.setText("Código");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -124,28 +130,34 @@ public class JForm1 extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jbtnArchivo)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jbtnJflex)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(205, 205, 205)
+                                .addComponent(jLabel1))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jlbConsola)
+                                .addGap(40, 40, 40)
+                                .addComponent(jlbTabla)))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 326, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(205, 205, 205)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jlbConsola)
-                        .addGap(40, 40, 40)
-                        .addComponent(jlbTabla)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jbtnArchivo)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jbtnJflex)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)))))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -157,7 +169,8 @@ public class JForm1 extends javax.swing.JFrame {
                     .addComponent(jbtnArchivo)
                     .addComponent(jbtnJflex)
                     .addComponent(jButton2)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jButton3))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlbConsola)
@@ -176,18 +189,12 @@ public class JForm1 extends javax.swing.JFrame {
             
         try {
             Reader Lector = new FileReader(ArchivoActual);
-            objFlex = new ClaseJflex(Lector);
+            objFlex = new ClaseJflex(Lector);       
             objCup = new ClaseCup(objFlex);
             objCup.debug_parse();
             objCup.parse();
             jTextArea1.append(objFlex.lexicalError);
             System.out.print(objFlex.lexicalError);
-            if(objCup.listOfErrors.equals("")){
-                jTextArea1.append("\n" + "No hay errores sintácticos" + "\n");
-            }
-            else{
-                jTextArea1.append(objCup.listOfErrors);
-            }
             JOptionPane.showMessageDialog(null, "Ha concluido el análisis léxico.","Notificación",JOptionPane.OK_OPTION);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(JForm1.class.getName()).log(Level.SEVERE, null, ex);
@@ -197,22 +204,13 @@ public class JForm1 extends javax.swing.JFrame {
     }//GEN-LAST:event_jbtnJflexActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JFileChooser dialog = new JFileChooser();
-     FileNameExtensionFilter filter = new FileNameExtensionFilter("archivos jcup", "cup");
-     dialog.setFileFilter(filter);
-     if(dialog.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) //Si se aprueba el archivo, generar clases del cup
-     {
-         File selectedFile = dialog.getSelectedFile();
-         String route = selectedFile.getPath() ;
-            try {
-                
-                java_cup.Main.main(new String[]{route}); //Generador del cup
-            } catch (IOException ex) {
-                Logger.getLogger(JForm1.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (Exception ex) {
-                Logger.getLogger(JForm1.class.getName()).log(Level.SEVERE, null, ex);
-            }
-     }
+                if(objCup.listOfErrors.equals("")){
+                    jTextArea1.append("\n" + "No hay errores sintácticos" + "\n");
+                }
+                else{
+                    jTextArea1.append(objCup.listOfErrors);
+                }
+                JOptionPane.showMessageDialog(null, "Ha concluido el análisis Sintactico.","Notificación",JOptionPane.OK_OPTION);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jbtnArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtnArchivoActionPerformed
@@ -227,6 +225,17 @@ public class JForm1 extends javax.swing.JFrame {
             }
         }catch(Exception e){}
     }//GEN-LAST:event_jbtnArchivoActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Convertir el diccionario en una lista y mandar a imprimir
+        ArrayList<Element> Arreglo = new ArrayList<>();
+        Arreglo.addAll(Tabla.Tabla.values());
+        //Código para insertar nuevas filas en el Jtable
+        DefaultTableModel model = (DefaultTableModel) jTable.getModel();
+        for (int i = 0; i < Arreglo.size(); i++) {
+            model.addRow(new Object[]{Arreglo.get(i).ObtenerNombre(), Arreglo.get(i).ObtenerTipo(), Arreglo.get(i).ObtenerValor(),Arreglo.get(i).ObtenerContexto(), Arreglo.get(i).ObtenerInstruccion(),Arreglo.get(i).ObtenerParametro()});
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -270,10 +279,11 @@ public class JForm1 extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JButton jbtnArchivo;
     private javax.swing.JButton jbtnJflex;
